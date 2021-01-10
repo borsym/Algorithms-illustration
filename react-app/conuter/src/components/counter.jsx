@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 class Counter extends Component {
     state = { 
-        count: 1,
+        value: this.props.value,
         tags: ['tag1', 'tag2', 'tag3']
 
     };
@@ -17,11 +17,16 @@ class Counter extends Component {
         return <ul>{this.state.tags.map(tag => <li key={tag} >{ tag }</li>)} </ul>
     }
 
+    handleIncrement = () => {
+       this.setState( { count: this.state.value + 1})
+    }; 
+
     render() { 
+        //console.log('props', this.props)
         return <React.Fragment>
             <div>
-                { this.state.tags.length === 0 && 'Plase createa a new tag!'}
-                {this.renderTags()}
+                <p>{this.state.value}</p>
+               <button onClick={this.handleIncrement} className="btn btn-secondary btn-sm">Increase</button>
             </div>
             </React.Fragment>;
     }
