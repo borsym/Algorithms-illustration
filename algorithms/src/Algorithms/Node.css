@@ -4,3 +4,13 @@
   outline: 1px solid rgb(175, 216, 248);
   display: inline-block;
 }
+.node-wall {
+  background-color: black;
+}
+.node-start {
+  background-color: blue;
+}
+
+.node-end {
+  background-color: green;
+}

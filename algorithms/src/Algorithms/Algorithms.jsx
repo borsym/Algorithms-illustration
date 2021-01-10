@@ -22,22 +22,35 @@ class Algorithms extends Component {
 
     this.setState({ grid });
   }
+  Clicked() {
+    console.log("put start");
+  }
 
   render() {
     const { grid } = this.state;
-    console.log(grid);
+    //console.log(grid);
     return (
-      <div className="grid">
-        {grid.map((row, rowIndex) => {
-          return (
-            // sajat key-el kell rendelkeznie a sornak és a soron belüli elemnek az azonosításhoz
-            <div key={rowIndex}>
-              {row.map((node, nodeIndex) => (
-                <Node key={nodeIndex}></Node>
-              ))}
-            </div>
-          );
-        })}
+      <div>
+        <button onClick={this.Clicked}>Put Start</button>
+        <div className="grid">
+          {grid.map((row, rowIndex) => {
+            return (
+              // sajat key-el kell rendelkeznie a sornak és a soron belüli elemnek az azonosításhoz
+              <div key={rowIndex}>
+                {row.map((node, nodeIndex) => (
+                  <Node
+                    key={nodeIndex}
+                    x={rowIndex}
+                    y={nodeIndex}
+                    wall={nodeIndex === 1 && rowIndex === 1}
+                    start={nodeIndex === 1 && rowIndex === 5}
+                    end={nodeIndex === 8 && rowIndex === 5}
+                  ></Node>
+                ))}
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   }

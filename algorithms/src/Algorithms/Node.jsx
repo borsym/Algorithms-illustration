@@ -2,10 +2,35 @@ import React, { Component } from "react";
 import "./Node.css";
 
 class Node extends Component {
-  state = {};
+  PutWall() {
+    console.log(
+      " X: " +
+        this.props.x +
+        "\n Y: " +
+        this.props.y +
+        "\n WALL: " +
+        this.props.wall +
+        "\n START: " +
+        this.props.start +
+        " \n END: " +
+        this.props.end
+    );
+  }
 
   render() {
-    return <div className="node"></div>;
+    const extraClassName = this.props.wall
+      ? "node-wall"
+      : this.props.start
+      ? "node-start"
+      : this.props.end
+      ? "node-end"
+      : "";
+    return (
+      <div
+        className={`node ${extraClassName}`}
+        onClick={() => this.PutWall()}
+      ></div>
+    );
   }
 }
 
