@@ -2,9 +2,10 @@ import React, { Component } from "react";
 import "./Algorithms.css";
 import Node from "./Node";
 import Astar from "./Algorithms-implement/Astar";
+import "bootstrap/dist/css/bootstrap.css";
 
 const ROWS_NUMBER = 15;
-const COLMS_NUMBER = 50;
+const COLMS_NUMBER = 15;
 
 const NODE_START_X = 0;
 const NODE_START_Y = 0;
@@ -18,20 +19,6 @@ class Algorithms extends Component {
     visitedNodes: [],
   };
 
-  //miutan minden lerendelodik meghivodik automatikus a metodus a react altal
-  //After all the elemnts of the page is rendered, this method is called
-  //componentDidMount() {
-  //  const grid = [];
-  //  for (let i = 0; i < ROWS_NUMBER; i++) {
-  //    const currentRow = [];
-  //    for (let j = 0; j < COLMS_NUMBER; j++) {
-  //      currentRow.push({ i, j });
-  //    }
-  //    grid.push(currentRow);
-  //  }
-  //
-  //  this.setState({ grid });
-  //}
   componentDidMount() {
     this.initializeGrid();
   }
@@ -44,9 +31,35 @@ class Algorithms extends Component {
         grid[i][j] = new Spot(i, j);
       }
     }
-    addNeighbours(grid);
+
     this.setState({ grid });
 
+    addNeighbours(grid);
+    const startNode = grid[NODE_START_X][NODE_START_Y];
+    const endNode = grid[NODE_END_X][NODE_END_Y];
+    let path = Astar(startNode, endNode);
+    this.setState({ path: path.path, visitedNodes: path.visitedNodes });
+  };
+
+  GenerateWalls = () => {
+    const grid = this.state.grid;
+    for (let i = 0; i < ROWS_NUMBER; i++) {
+      for (let j = 0; j < COLMS_NUMBER; j++) {
+        if (Math.random(1) < 0.2 && !grid[i][j].isStart && !grid[i][j].isEnd)
+          grid[i][j].isWall = true;
+      }
+    }
+    this.setState({ grid });
+    this.makePath();
+  };
+
+  ResetTable = () => {
+    console.log("reset");
+  };
+
+  makePath = () => {
+    const grid = this.state.grid;
+    addNeighbours(grid);
     const startNode = grid[NODE_START_X][NODE_START_Y];
     const endNode = grid[NODE_END_X][NODE_END_Y];
     let path = Astar(startNode, endNode);
@@ -56,10 +69,12 @@ class Algorithms extends Component {
   VisualizePath = () => {
     for (let i = 0; i <= this.state.visitedNodes.length; i++) {
       if (i === this.state.visitedNodes.length) {
+        console.log("Itt vagyok az elsoben");
         setTimeout(() => {
           visualizeShortestPath(this.state.path);
         }, 20 * i);
       } else {
+        console.log("Itt vagyok a masodikban");
         setTimeout(() => {
           const node = this.state.visitedNodes[i];
           document.getElementById(`node-${node.x}-${node.y}`).className =
@@ -70,33 +85,52 @@ class Algorithms extends Component {
   };
 
   render() {
-    //console.log(this.state.path);
     const { grid } = this.state;
-    //console.log(grid);
-    //console.log(grid);
     return (
-      <div>
-        <button onClick={this.VisualizePath}>Start</button>
-        <div className="grid">
-          {grid.map((row, rowIndex) => {
-            return (
-              <div key={rowIndex}>
-                {row.map((node, nodeIndex) => {
-                  const { x, y, isWall, isStart, isEnd } = node;
-                  return (
-                    <Node
-                      key={nodeIndex}
-                      x={x}
-                      y={y}
-                      isWall={isWall}
-                      isStart={isStart}
-                      isEnd={isEnd}
-                    ></Node>
-                  );
-                })}
-              </div>
-            );
-          })}
+      <div className="container">
+        <div className="row">
+          <div className="col text-center ">
+            <button
+              className="btn btn-warning btn-md"
+              onClick={this.ResetTable}
+            >
+              Reset
+            </button>
+            <button
+              onClick={this.VisualizePath}
+              className="btn btn-primary btn-lg button-move"
+            >
+              Start
+            </button>
+            <button
+              onClick={this.GenerateWalls}
+              className="btn btn-warning btn-md "
+            >
+              Generate Walls
+            </button>
+
+            <div className="grid">
+              {grid.map((row, rowIndex) => {
+                return (
+                  <div key={rowIndex}>
+                    {row.map((node, nodeIndex) => {
+                      const { x, y, isWall, isStart, isEnd } = node;
+                      return (
+                        <Node
+                          key={nodeIndex}
+                          x={x}
+                          y={y}
+                          isWall={isWall}
+                          isStart={isStart}
+                          isEnd={isEnd}
+                        ></Node>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -129,9 +163,7 @@ function Spot(i, j) {
   this.isStart = this.x === NODE_START_X && this.y === NODE_START_Y;
   this.isEnd = this.x === NODE_END_X && this.y === NODE_END_Y;
   this.isWall = false;
-  if (Math.random(1) < 0.2 && !this.isStart && !this.isEnd) {
-    this.isWall = true;
-  }
+  //if (Math.random(1) < 0.2 && !this.isStart && !this.isEnd) this.isWall = true;
   this.f = 0;
   this.g = 0;
   this.h = 0;
