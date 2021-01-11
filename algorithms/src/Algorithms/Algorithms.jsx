@@ -43,16 +43,17 @@ class Algorithms extends Component {
     this.setState({ path: path.path, visitedNodes: path.visitedNodes });
   };
 
-  handleMouseDown(row, col) {
+  handleMouseDown(x, y) {
     const grid = this.state.grid;
-    grid[row][col].isWall = true;
+    if (grid[x][y].isEnd || grid[x][y].isStart) return;
+    grid[x][y].isWall = true;
     this.setState({ grid: grid, mouseIsPressed: true });
   }
 
   handleMouseEnter(x, y) {
     if (!this.state.mouseIsPressed) return;
-    console.log("itt");
     const grid = this.state.grid;
+    if (grid[x][y].isEnd || grid[x][y].isStart) return;
     grid[x][y].isWall = true;
     this.setState({ grid });
   }
@@ -63,12 +64,12 @@ class Algorithms extends Component {
 
   GenerateWalls = () => {
     this.ResetTable();
-    console.log("there is a bug, sometimes some wall don't dissapear");
+    console.log("there is a bug, sometime the walls doesn't dissapear");
     const grid = this.state.grid;
 
     for (let i = 0; i < ROWS_NUMBER; i++) {
       for (let j = 0; j < COLMS_NUMBER; j++) {
-        if (Math.random(1) < 0.1 && !grid[i][j].isStart && !grid[i][j].isEnd)
+        if (Math.random(1) < 0.2 && !grid[i][j].isStart && !grid[i][j].isEnd)
           grid[i][j].isWall = true;
       }
     }
