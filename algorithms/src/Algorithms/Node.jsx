@@ -32,6 +32,8 @@ class Node extends Component {
         //onClick={() => this.PutWall()}
         id={`node-${this.props.x}-${this.props.y}`}
         onMouseDown={() => this.props.onMouseDown(this.props.x, this.props.y)}
+        onMouseEnter={() => this.props.onMouseEnter(this.props.x, this.props.y)}
+        onMouseUp={() => this.props.onMouseUp()}
       ></div>
     );
   }

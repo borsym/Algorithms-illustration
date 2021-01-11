@@ -4,8 +4,8 @@ import Node from "./Node";
 import Astar from "./Algorithms-implement/Astar";
 import "bootstrap/dist/css/bootstrap.css";
 
-const ROWS_NUMBER = 15;
-const COLMS_NUMBER = 15;
+const ROWS_NUMBER = 10;
+const COLMS_NUMBER = 10;
 
 const NODE_START_X = 0;
 const NODE_START_Y = 0;
@@ -17,7 +17,9 @@ class Algorithms extends Component {
     grid: [],
     path: [],
     visitedNodes: [],
+    mouseIsPressed: false,
   };
+
   // lefut miután minden készenáll
   componentDidMount() {
     this.initializeGrid();
@@ -42,8 +44,21 @@ class Algorithms extends Component {
   };
 
   handleMouseDown(row, col) {
-    const newGrid = getNewGridWithWallToggled(this.state.grid, row, col);
-    this.setState({ grid: newGrid });
+    const grid = this.state.grid;
+    grid[row][col].isWall = true;
+    this.setState({ grid: grid, mouseIsPressed: true });
+  }
+
+  handleMouseEnter(x, y) {
+    if (!this.state.mouseIsPressed) return;
+    console.log("itt");
+    const grid = this.state.grid;
+    grid[x][y].isWall = true;
+    this.setState({ grid });
+  }
+
+  handleMouseUp() {
+    this.setState({ mouseIsPressed: false });
   }
 
   GenerateWalls = () => {
@@ -90,6 +105,7 @@ class Algorithms extends Component {
     const startNode = grid[NODE_START_X][NODE_START_Y];
     const endNode = grid[NODE_END_X][NODE_END_Y];
     let path = Astar(startNode, endNode);
+
     this.setState({ path: path.path, visitedNodes: path.visitedNodes });
 
     this.VisualizePath(path.visitedNodes, path.path);
@@ -100,13 +116,13 @@ class Algorithms extends Component {
       if (i === visitedNodes.length) {
         setTimeout(() => {
           visualizeShortestPath(path);
-        }, 20 * i);
+        }, 5 * i);
       } else {
         setTimeout(() => {
           const node = visitedNodes[i];
           document.getElementById(`node-${node.x}-${node.y}`).className =
             "node node-visited";
-        }, 20 * i);
+        }, 5 * i);
       }
     }
   };
@@ -150,7 +166,10 @@ class Algorithms extends Component {
                           isWall={isWall}
                           isStart={isStart}
                           isEnd={isEnd}
+                          mouseIsPressed={this.state.mouseIsPressed}
                           onMouseDown={(x, y) => this.handleMouseDown(x, y)}
+                          onMouseEnter={(x, y) => this.handleMouseEnter(x, y)}
+                          onMouseUp={() => this.handleMouseUp()}
                         ></Node>
                       );
                     })}
@@ -206,14 +225,3 @@ function Spot(i, j) {
       this.neighbours.push(grid[this.x][this.y + 1]);
   };
 }
-
-const getNewGridWithWallToggled = (grid, row, col) => {
-  const newGrid = grid.slice();
-  const node = newGrid[row][col];
-  const newNode = {
-    ...node,
-    isWall: !node.isWall,
-  };
-  newGrid[row][col] = newNode;
-  return newGrid;
-};
