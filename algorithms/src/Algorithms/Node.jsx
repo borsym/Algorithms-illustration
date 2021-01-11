@@ -18,11 +18,11 @@ class Node extends Component {
   }
 
   render() {
-    const extraClassName = this.props.wall
+    const extraClassName = this.props.isWall
       ? "node-wall"
-      : this.props.start
+      : this.props.isStart
       ? "node-start"
-      : this.props.end
+      : this.props.isEnd
       ? "node-end"
       : "";
 
