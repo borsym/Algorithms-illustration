@@ -9,11 +9,11 @@ class Node extends Component {
         "\n Y: " +
         this.props.y +
         "\n WALL: " +
-        this.props.wall +
+        this.props.isWall +
         "\n START: " +
-        this.props.start +
+        this.props.isStart +
         " \n END: " +
-        this.props.end
+        this.props.isEnd
     );
   }
 
@@ -25,10 +25,12 @@ class Node extends Component {
       : this.props.end
       ? "node-end"
       : "";
+
     return (
       <div
         className={`node ${extraClassName}`}
         onClick={() => this.PutWall()}
+        // onMouseDown={() => this.props.onMouseDown(this.props.x, this.props.y)}
       ></div>
     );
   }
