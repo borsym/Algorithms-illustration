@@ -18,7 +18,7 @@ class Algorithms extends Component {
     path: [],
     visitedNodes: [],
   };
-
+  // lefut miután minden készenáll
   componentDidMount() {
     this.initializeGrid();
   }
@@ -41,20 +41,47 @@ class Algorithms extends Component {
     this.setState({ path: path.path, visitedNodes: path.visitedNodes });
   };
 
+  handleMouseDown(row, col) {
+    const newGrid = getNewGridWithWallToggled(this.state.grid, row, col);
+    this.setState({ grid: newGrid });
+  }
+
   GenerateWalls = () => {
+    this.ResetTable();
+    console.log("there is a bug, sometimes some wall don't dissapear");
     const grid = this.state.grid;
+
     for (let i = 0; i < ROWS_NUMBER; i++) {
       for (let j = 0; j < COLMS_NUMBER; j++) {
-        if (Math.random(1) < 0.2 && !grid[i][j].isStart && !grid[i][j].isEnd)
+        if (Math.random(1) < 0.1 && !grid[i][j].isStart && !grid[i][j].isEnd)
           grid[i][j].isWall = true;
       }
     }
     this.setState({ grid });
-    this.makePath();
   };
 
   ResetTable = () => {
-    console.log("reset");
+    const grid = this.state.grid;
+    for (let i = 0; i < ROWS_NUMBER; i++) {
+      for (let j = 0; j < COLMS_NUMBER; j++) {
+        if (!grid[i][j].isStart && !grid[i][j].isEnd) {
+          grid[i][j].isWall = false;
+
+          document.getElementById(
+            `node-${grid[i][j].x}-${grid[i][j].y}`
+          ).className = "node";
+        } else if (grid[i][j].isStart) {
+          document.getElementById(
+            `node-${grid[i][j].x}-${grid[i][j].y}`
+          ).className = "node node-start";
+        } else if (grid[i][j].isEnd) {
+          document.getElementById(
+            `node-${grid[i][j].x}-${grid[i][j].y}`
+          ).className = "node node-end";
+        }
+      }
+    }
+    this.setState({ grid });
   };
 
   makePath = () => {
@@ -64,19 +91,19 @@ class Algorithms extends Component {
     const endNode = grid[NODE_END_X][NODE_END_Y];
     let path = Astar(startNode, endNode);
     this.setState({ path: path.path, visitedNodes: path.visitedNodes });
+
+    this.VisualizePath(path.visitedNodes, path.path);
   };
 
-  VisualizePath = () => {
-    for (let i = 0; i <= this.state.visitedNodes.length; i++) {
-      if (i === this.state.visitedNodes.length) {
-        console.log("Itt vagyok az elsoben");
+  VisualizePath = (visitedNodes, path) => {
+    for (let i = 0; i <= visitedNodes.length; i++) {
+      if (i === visitedNodes.length) {
         setTimeout(() => {
-          visualizeShortestPath(this.state.path);
+          visualizeShortestPath(path);
         }, 20 * i);
       } else {
-        console.log("Itt vagyok a masodikban");
         setTimeout(() => {
-          const node = this.state.visitedNodes[i];
+          const node = visitedNodes[i];
           document.getElementById(`node-${node.x}-${node.y}`).className =
             "node node-visited";
         }, 20 * i);
@@ -97,7 +124,7 @@ class Algorithms extends Component {
               Reset
             </button>
             <button
-              onClick={this.VisualizePath}
+              onClick={this.makePath}
               className="btn btn-primary btn-lg button-move"
             >
               Start
@@ -114,15 +141,16 @@ class Algorithms extends Component {
                 return (
                   <div key={rowIndex}>
                     {row.map((node, nodeIndex) => {
-                      const { x, y, isWall, isStart, isEnd } = node;
+                      const { x, y, isWall, isStart, isEnd } = node; // minden node rendelkezik ezekkel és még sok mással ami a pointba van
                       return (
-                        <Node
+                        <Node //ezek prop ok a nodeban
                           key={nodeIndex}
                           x={x}
                           y={y}
                           isWall={isWall}
                           isStart={isStart}
                           isEnd={isEnd}
+                          onMouseDown={(x, y) => this.handleMouseDown(x, y)}
                         ></Node>
                       );
                     })}
@@ -178,3 +206,14 @@ function Spot(i, j) {
       this.neighbours.push(grid[this.x][this.y + 1]);
   };
 }
+
+const getNewGridWithWallToggled = (grid, row, col) => {
+  const newGrid = grid.slice();
+  const node = newGrid[row][col];
+  const newNode = {
+    ...node,
+    isWall: !node.isWall,
+  };
+  newGrid[row][col] = newNode;
+  return newGrid;
+};

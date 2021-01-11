@@ -29,9 +29,9 @@ class Node extends Component {
     return (
       <div
         className={`node ${extraClassName}`}
-        onClick={() => this.PutWall()}
+        //onClick={() => this.PutWall()}
         id={`node-${this.props.x}-${this.props.y}`}
-        // onMouseDown={() => this.props.onMouseDown(this.props.x, this.props.y)}
+        onMouseDown={() => this.props.onMouseDown(this.props.x, this.props.y)}
       ></div>
     );
   }
