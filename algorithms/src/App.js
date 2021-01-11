@@ -2,7 +2,7 @@ import "./App.css";
 import Algorithms from "./Algorithms/Algorithms";
 function App() {
   return (
-    <div>
+    <div className="index.css">
       <Algorithms></Algorithms>
     </div>
   );

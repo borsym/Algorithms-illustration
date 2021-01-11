@@ -4,13 +4,18 @@ import Node from "./Node";
 import Astar from "./Algorithms-implement/Astar";
 import "bootstrap/dist/css/bootstrap.css";
 
-const ROWS_NUMBER = 10;
+const ROWS_NUMBER = 8;
 const COLMS_NUMBER = 10;
 
-const NODE_START_X = 0;
-const NODE_START_Y = 0;
-const NODE_END_X = ROWS_NUMBER - 1;
-const NODE_END_Y = COLMS_NUMBER - 1;
+const NODE_START_X = Math.floor(ROWS_NUMBER / 2);
+const NODE_START_Y = 1;
+const NODE_END_X = Math.floor(ROWS_NUMBER / 2);
+const NODE_END_Y = COLMS_NUMBER - 5;
+
+const S = 1;
+const E = 2;
+const HORIZONTAL = 1;
+const VERTICAL = 2;
 
 class Algorithms extends Component {
   state = {
@@ -44,6 +49,7 @@ class Algorithms extends Component {
   };
 
   handleMouseDown(x, y) {
+    //console.log("lenyomott");
     const grid = this.state.grid;
     if (grid[x][y].isEnd || grid[x][y].isStart) return;
     grid[x][y].isWall = true;
@@ -64,7 +70,7 @@ class Algorithms extends Component {
 
   GenerateWalls = () => {
     this.ResetTable();
-    console.log("there is a bug, sometime the walls doesn't dissapear");
+    //console.log("there is a bug, sometime the walls doesn't dissapear");
     const grid = this.state.grid;
 
     for (let i = 0; i < ROWS_NUMBER; i++) {
@@ -128,6 +134,18 @@ class Algorithms extends Component {
     }
   };
 
+  HandleMaze = () => {
+    const grid = recursiveDivisionMaze(
+      this.state.grid,
+      0,
+      0,
+      ROWS_NUMBER,
+      COLMS_NUMBER,
+      choose_orientation(ROWS_NUMBER, COLMS_NUMBER)
+    );
+    this.setState({ grid });
+  };
+
   render() {
     const { grid } = this.state;
     return (
@@ -151,6 +169,12 @@ class Algorithms extends Component {
               className="btn btn-warning btn-md "
             >
               Generate Walls
+            </button>
+            <button
+              onClick={this.HandleMaze}
+              className="btn btn-danger btn-md "
+            >
+              Simple Maze
             </button>
 
             <div className="grid">
@@ -186,6 +210,85 @@ class Algorithms extends Component {
 }
 
 export default Algorithms;
+
+const choose_orientation = (width, height) => {
+  if (width < height) {
+    return HORIZONTAL;
+  } else if (height < width) {
+    return VERTICAL;
+  } else {
+    return Math.floor(Math.random() * 3) % 2 === 0 ? HORIZONTAL : VERTICAL;
+  }
+
+  return 1;
+};
+
+const recursiveDivisionMaze = (grid, x, y, width, height, orientation) => {
+  console.log(
+    x + " " + y + " width " + width + " height" + height + " " + orientation
+  );
+  if (width <= 2 || height <= 2) {
+    console.log("MOST RETURNULT");
+    return grid;
+  }
+
+  let horizontal = orientation === HORIZONTAL;
+
+  /* where will the wall be drawn from?*/
+  let wx = x + (horizontal ? 0 : Math.floor(Math.random() * (width - 2)));
+  let wy = y + (horizontal ? Math.floor(Math.random() * (height - 2)) : 0);
+
+  /*  where will the passage through the wall exist?*/
+  let px = wx + (horizontal ? Math.floor(Math.random() * width) : 0);
+  let py = wy + (horizontal ? 0 : Math.floor(Math.random() * height));
+
+  /*what direction will the wall be drawn? */
+  let dx = horizontal ? 1 : 0;
+  let dy = horizontal ? 0 : 1;
+  // how long will the wall be?
+  let length = horizontal ? width : height;
+
+  /*# what direction is perpendicular to the wall? */
+  let dir = horizontal ? S : E;
+
+  for (let i = 0; i < length; i++) {
+    if (wx !== px || wy !== py) grid[wy][wx].isWall = true; // itt |= dir van
+    wx += dx;
+    wy += dy;
+  }
+
+  let nx = x;
+  let ny = y;
+
+  let w = horizontal ? (width, wy - y + 1) : (wx - x + 1, height);
+  let h = horizontal ? (wx - x + 1, height) : (width, wy - y + 1);
+
+  console.log(
+    "nx: " +
+      nx +
+      " ny:" +
+      ny +
+      " w:" +
+      w +
+      " h:" +
+      h +
+      " cho:" +
+      choose_orientation(w, h)
+  );
+  nx = horizontal ? (x, wy + 1) : (wx + 1, y);
+  ny = horizontal ? (wx + 1, y) : (x, wy + 1);
+  w = horizontal ? (width, y + height - wy - 1) : (x + width - wx - 1, height);
+  h = horizontal ? (x + width - wx - 1, height) : (width, y + height - wy - 1);
+  //grid, x, y, width, height, orientation
+  recursiveDivisionMaze(grid, nx, ny, w, h, choose_orientation(w, h));
+  return grid;
+  nx = horizontal ? (x, wy + 1) : (wx + 1, y);
+  ny = horizontal ? (wx + 1, y) : (x, wy + 1);
+  w = horizontal ? (width, y + height - wy - 1) : (x + width - wx - 1, height);
+  h = horizontal ? (x + width - wx - 1, height) : (width, y + height - wy - 1);
+
+  recursiveDivisionMaze(grid, nx, ny, w, h, choose_orientation(w, h));
+};
 
 const visualizeShortestPath = (shortestPathNodes) => {
   for (let i = 0; i < shortestPathNodes.length; i++) {
