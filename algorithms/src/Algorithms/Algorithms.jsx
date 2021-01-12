@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./Algorithms.css";
 import Node from "./Node";
 import Astar from "./Algorithms-implement/Astar";
+import RecursiveDivision from "./maze-generators/RecursiveDivision";
 import "bootstrap/dist/css/bootstrap.css";
 
 const ROWS_NUMBER = 10;
@@ -135,13 +136,13 @@ class Algorithms extends Component {
   };
 
   HandleMaze = () => {
-    const grid = addInnerWalls(
+    const grid = RecursiveDivision(
       true,
-      0,
+      1,
       COLMS_NUMBER - 2,
-      0,
+      1,
       ROWS_NUMBER - 2,
-      2,
+      1,
       this.state.grid
     );
     this.setState({ grid });
@@ -211,72 +212,6 @@ class Algorithms extends Component {
 }
 
 export default Algorithms;
-
-function addInnerWalls(h, minX, maxX, minY, maxY, gate, grid) {
-  if (h) {
-    if (maxX - minX < 2) {
-      return;
-    }
-
-    var y = Math.floor(randomNumber(minY, maxY) / 2) * 2;
-    addHWall(minX, maxX, y, grid);
-
-    addInnerWalls(!h, minX, maxX, minY, y - 1, gate, grid);
-    addInnerWalls(!h, minX, maxX, y + 1, maxY, gate, grid);
-  } else {
-    if (maxY - minY < 2) {
-      return;
-    }
-
-    var x = Math.floor(randomNumber(minX, maxX) / 2) * 2;
-    addVWall(minY, maxY, x, grid);
-
-    addInnerWalls(!h, minX, x - 1, minY, maxY, gate, grid);
-    addInnerWalls(!h, x + 1, maxX, minY, maxY, gate, grid);
-  }
-
-  return grid;
-}
-
-function addHWall(minX, maxX, y, grid) {
-  let hole = Math.floor(randomNumber(minX, maxX) / 2) * 2 + 1;
-  console.log("Y");
-  for (let i = minX; i <= maxX; i++) {
-    if (i === hole) {
-      grid[y][i].isWall = false;
-    } else {
-      setTimeout(() => {
-        grid[y][i].isWall = true;
-        const node = grid[y][i];
-        document.getElementById(`node-${node.x}-${node.y}`).className =
-          "node node-wall";
-      }, 40 * i);
-    }
-    //console.log(grid[y][i]);
-  }
-}
-
-function addVWall(minY, maxY, x, grid) {
-  let hole = Math.floor(randomNumber(minY, maxY) / 2) * 2 + 1;
-  console.log("X" + " " + minY + " " + maxY + " " + x);
-  for (let i = minY; i <= maxY; i++) {
-    if (i === hole) {
-      grid[i][x].isWall = false;
-    } else {
-      setTimeout(() => {
-        grid[i][x].isWall = true;
-        const node = grid[i][x];
-        document.getElementById(`node-${node.x}-${node.y}`).className =
-          "node node-wall";
-      }, 40 * i);
-    }
-    //console.log(grid[i][x]);
-  }
-}
-
-function randomNumber(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
 
 const visualizeShortestPath = (shortestPathNodes) => {
   for (let i = 0; i < shortestPathNodes.length; i++) {
