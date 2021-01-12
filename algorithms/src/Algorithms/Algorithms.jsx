@@ -4,8 +4,8 @@ import Node from "./Node";
 import Astar from "./Algorithms-implement/Astar";
 import "bootstrap/dist/css/bootstrap.css";
 
-const ROWS_NUMBER = 8;
-const COLMS_NUMBER = 10;
+const ROWS_NUMBER = 10;
+const COLMS_NUMBER = 40;
 
 const NODE_START_X = Math.floor(ROWS_NUMBER / 2);
 const NODE_START_Y = 1;
@@ -135,13 +135,14 @@ class Algorithms extends Component {
   };
 
   HandleMaze = () => {
-    const grid = recursiveDivisionMaze(
-      this.state.grid,
+    const grid = addInnerWalls(
+      true,
       0,
+      COLMS_NUMBER - 2,
       0,
-      ROWS_NUMBER,
-      COLMS_NUMBER,
-      choose_orientation(ROWS_NUMBER, COLMS_NUMBER)
+      ROWS_NUMBER - 2,
+      2,
+      this.state.grid
     );
     this.setState({ grid });
   };
@@ -211,84 +212,71 @@ class Algorithms extends Component {
 
 export default Algorithms;
 
-const choose_orientation = (width, height) => {
-  if (width < height) {
-    return HORIZONTAL;
-  } else if (height < width) {
-    return VERTICAL;
+function addInnerWalls(h, minX, maxX, minY, maxY, gate, grid) {
+  if (h) {
+    if (maxX - minX < 2) {
+      return;
+    }
+
+    var y = Math.floor(randomNumber(minY, maxY) / 2) * 2;
+    addHWall(minX, maxX, y, grid);
+
+    addInnerWalls(!h, minX, maxX, minY, y - 1, gate, grid);
+    addInnerWalls(!h, minX, maxX, y + 1, maxY, gate, grid);
   } else {
-    return Math.floor(Math.random() * 3) % 2 === 0 ? HORIZONTAL : VERTICAL;
+    if (maxY - minY < 2) {
+      return;
+    }
+
+    var x = Math.floor(randomNumber(minX, maxX) / 2) * 2;
+    addVWall(minY, maxY, x, grid);
+
+    addInnerWalls(!h, minX, x - 1, minY, maxY, gate, grid);
+    addInnerWalls(!h, x + 1, maxX, minY, maxY, gate, grid);
   }
 
-  return 1;
-};
-
-const recursiveDivisionMaze = (grid, x, y, width, height, orientation) => {
-  console.log(
-    x + " " + y + " width " + width + " height" + height + " " + orientation
-  );
-  if (width <= 2 || height <= 2) {
-    console.log("MOST RETURNULT");
-    return grid;
-  }
-
-  let horizontal = orientation === HORIZONTAL;
-
-  /* where will the wall be drawn from?*/
-  let wx = x + (horizontal ? 0 : Math.floor(Math.random() * (width - 2)));
-  let wy = y + (horizontal ? Math.floor(Math.random() * (height - 2)) : 0);
-
-  /*  where will the passage through the wall exist?*/
-  let px = wx + (horizontal ? Math.floor(Math.random() * width) : 0);
-  let py = wy + (horizontal ? 0 : Math.floor(Math.random() * height));
-
-  /*what direction will the wall be drawn? */
-  let dx = horizontal ? 1 : 0;
-  let dy = horizontal ? 0 : 1;
-  // how long will the wall be?
-  let length = horizontal ? width : height;
-
-  /*# what direction is perpendicular to the wall? */
-  let dir = horizontal ? S : E;
-
-  for (let i = 0; i < length; i++) {
-    if (wx !== px || wy !== py) grid[wy][wx].isWall = true; // itt |= dir van
-    wx += dx;
-    wy += dy;
-  }
-
-  let nx = x;
-  let ny = y;
-
-  let w = horizontal ? (width, wy - y + 1) : (wx - x + 1, height);
-  let h = horizontal ? (wx - x + 1, height) : (width, wy - y + 1);
-
-  console.log(
-    "nx: " +
-      nx +
-      " ny:" +
-      ny +
-      " w:" +
-      w +
-      " h:" +
-      h +
-      " cho:" +
-      choose_orientation(w, h)
-  );
-  nx = horizontal ? (x, wy + 1) : (wx + 1, y);
-  ny = horizontal ? (wx + 1, y) : (x, wy + 1);
-  w = horizontal ? (width, y + height - wy - 1) : (x + width - wx - 1, height);
-  h = horizontal ? (x + width - wx - 1, height) : (width, y + height - wy - 1);
-  //grid, x, y, width, height, orientation
-  recursiveDivisionMaze(grid, nx, ny, w, h, choose_orientation(w, h));
   return grid;
-  nx = horizontal ? (x, wy + 1) : (wx + 1, y);
-  ny = horizontal ? (wx + 1, y) : (x, wy + 1);
-  w = horizontal ? (width, y + height - wy - 1) : (x + width - wx - 1, height);
-  h = horizontal ? (x + width - wx - 1, height) : (width, y + height - wy - 1);
+}
 
-  recursiveDivisionMaze(grid, nx, ny, w, h, choose_orientation(w, h));
-};
+function addHWall(minX, maxX, y, grid) {
+  let hole = Math.floor(randomNumber(minX, maxX) / 2) * 2 + 1;
+  console.log("Y");
+  for (let i = minX; i <= maxX; i++) {
+    if (i === hole) {
+      grid[y][i].isWall = false;
+    } else {
+      setTimeout(() => {
+        grid[y][i].isWall = true;
+        const node = grid[y][i];
+        document.getElementById(`node-${node.x}-${node.y}`).className =
+          "node node-wall";
+      }, 40 * i);
+    }
+    //console.log(grid[y][i]);
+  }
+}
+
+function addVWall(minY, maxY, x, grid) {
+  let hole = Math.floor(randomNumber(minY, maxY) / 2) * 2 + 1;
+  console.log("X" + " " + minY + " " + maxY + " " + x);
+  for (let i = minY; i <= maxY; i++) {
+    if (i === hole) {
+      grid[i][x].isWall = false;
+    } else {
+      setTimeout(() => {
+        grid[i][x].isWall = true;
+        const node = grid[i][x];
+        document.getElementById(`node-${node.x}-${node.y}`).className =
+          "node node-wall";
+      }, 40 * i);
+    }
+    //console.log(grid[i][x]);
+  }
+}
+
+function randomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
 
 const visualizeShortestPath = (shortestPathNodes) => {
   for (let i = 0; i < shortestPathNodes.length; i++) {
