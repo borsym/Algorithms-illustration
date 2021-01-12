@@ -3,6 +3,7 @@ import "./Algorithms.css";
 import Node from "./Node";
 import Astar from "./Algorithms-implement/Astar";
 import RecursiveDivision from "./maze-generators/RecursiveDivision";
+import Stack from "./Algorithms-implement/Stack";
 import "bootstrap/dist/css/bootstrap.css";
 
 const ROWS_NUMBER = 20;
@@ -11,12 +12,7 @@ const COLMS_NUMBER = 20;
 const NODE_START_X = Math.floor(ROWS_NUMBER / 2);
 const NODE_START_Y = 1;
 const NODE_END_X = Math.floor(ROWS_NUMBER / 2);
-const NODE_END_Y = COLMS_NUMBER - 5;
-
-const S = 1;
-const E = 2;
-const HORIZONTAL = 1;
-const VERTICAL = 2;
+const NODE_END_Y = COLMS_NUMBER - 2;
 
 class Algorithms extends Component {
   state = {
@@ -124,31 +120,35 @@ class Algorithms extends Component {
       if (i === visitedNodes.length) {
         setTimeout(() => {
           visualizeShortestPath(path);
-        }, 5 * i);
+        }, 10 * i);
       } else {
         setTimeout(() => {
           const node = visitedNodes[i];
           document.getElementById(`node-${node.x}-${node.y}`).className =
             "node node-visited";
-        }, 5 * i);
+        }, 10 * i);
       }
     }
   };
 
   HandleMaze = () => {
-    const grid2 = addOuterWalls(this.state.grid, COLMS_NUMBER, ROWS_NUMBER);
+    const grid2 = addOuterWalls(this.state.grid, ROWS_NUMBER, COLMS_NUMBER);
     this.setState({ grid: grid2 });
 
     const grid = RecursiveDivision(
       true,
       1,
-      COLMS_NUMBER - 2,
-      1,
       ROWS_NUMBER - 2,
-      3,
+      1,
+      COLMS_NUMBER - 2,
       this.state.grid
     );
     this.setState({ grid });
+  };
+
+  HandleBackTracing = () => {
+    console.log("szia");
+    backtracing();
   };
 
   render() {
@@ -179,7 +179,13 @@ class Algorithms extends Component {
               onClick={this.HandleMaze}
               className="btn btn-danger btn-md "
             >
-              Simple Maze
+              Recursive Division (not working)
+            </button>
+            <button
+              onClick={this.HandleBackTracing}
+              className="btn btn-danger btn-md "
+            >
+              Backtracing (not working)
             </button>
 
             <div className="grid">
@@ -216,10 +222,16 @@ class Algorithms extends Component {
 
 export default Algorithms;
 
+function backtracing() {
+  let stack = new Stack();
+  stack.put(5);
+  console.log(stack.top());
+}
+
 function addOuterWalls(grid, width, height) {
-  for (var i = 0; i < width; i++) {
+  for (let i = 0; i < width; i++) {
     if (i === 0 || i === width - 1) {
-      for (var j = 0; j < height; j++) {
+      for (let j = 0; j < height; j++) {
         grid[i][j].isWall = true;
       }
     } else {
