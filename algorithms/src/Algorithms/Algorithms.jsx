@@ -5,8 +5,8 @@ import Astar from "./Algorithms-implement/Astar";
 import RecursiveDivision from "./maze-generators/RecursiveDivision";
 import "bootstrap/dist/css/bootstrap.css";
 
-const ROWS_NUMBER = 10;
-const COLMS_NUMBER = 40;
+const ROWS_NUMBER = 20;
+const COLMS_NUMBER = 20;
 
 const NODE_START_X = Math.floor(ROWS_NUMBER / 2);
 const NODE_START_Y = 1;
@@ -136,13 +136,16 @@ class Algorithms extends Component {
   };
 
   HandleMaze = () => {
+    const grid2 = addOuterWalls(this.state.grid, COLMS_NUMBER, ROWS_NUMBER);
+    this.setState({ grid: grid2 });
+
     const grid = RecursiveDivision(
       true,
       1,
       COLMS_NUMBER - 2,
       1,
       ROWS_NUMBER - 2,
-      1,
+      3,
       this.state.grid
     );
     this.setState({ grid });
@@ -213,6 +216,21 @@ class Algorithms extends Component {
 
 export default Algorithms;
 
+function addOuterWalls(grid, width, height) {
+  for (var i = 0; i < width; i++) {
+    if (i === 0 || i === width - 1) {
+      for (var j = 0; j < height; j++) {
+        grid[i][j].isWall = true;
+      }
+    } else {
+      grid[i][0].isWall = true;
+      grid[i][height - 1].isWall = true;
+    }
+  }
+
+  return grid;
+}
+
 const visualizeShortestPath = (shortestPathNodes) => {
   for (let i = 0; i < shortestPathNodes.length; i++) {
     setTimeout(() => {
@@ -237,6 +255,7 @@ function Spot(i, j) {
   this.isStart = this.x === NODE_START_X && this.y === NODE_START_Y;
   this.isEnd = this.x === NODE_END_X && this.y === NODE_END_Y;
   this.isWall = false;
+
   //if (Math.random(1) < 0.2 && !this.isStart && !this.isEnd) this.isWall = true;
   this.f = 0;
   this.g = 0;
