@@ -1,24 +1,29 @@
 class Stack {
   constructor() {
-    this.items = [];
+    this.itemsX = [];
+    this.itemsY = [];
     this.index = 0;
   }
 
-  put(value) {
-    this.items[this.index] = value;
+  put(x, y) {
+    this.itemsX[this.index] = x;
+    this.itemsY[this.index] = y;
     this.index++;
-    return this.index - 1;
+
+    let arr = [this.itemsX[this.index - 1], this.itemsY[this.index - 1]];
+    return arr;
   }
 
   pop() {
     if (this.index === 0) return null;
-    let deleteItem = this.items[this.index - 1];
+    let deleteItemX = this.itemsX[this.index - 1];
+    let deleteItemY = this.itemsY[this.index - 1];
     this.index--;
-    return deleteItem;
+    return [deleteItemX, deleteItemY];
   }
 
   top() {
-    return this.items[this.index - 1];
+    return [this.itemsX[this.index - 1], this.itemsY[this.index - 1]];
   }
 
   isEmpty() {

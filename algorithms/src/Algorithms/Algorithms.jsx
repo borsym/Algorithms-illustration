@@ -3,7 +3,7 @@ import "./Algorithms.css";
 import Node from "./Node";
 import Astar from "./Algorithms-implement/Astar";
 import RecursiveDivision from "./maze-generators/RecursiveDivision";
-import Stack from "./Algorithms-implement/Stack";
+import Backtracing from "./maze-generators/Backtracing";
 import "bootstrap/dist/css/bootstrap.css";
 
 const ROWS_NUMBER = 20;
@@ -130,7 +130,7 @@ class Algorithms extends Component {
       }
     }
   };
-
+  // this doesn't work properly
   HandleMaze = () => {
     const grid2 = addOuterWalls(this.state.grid, ROWS_NUMBER, COLMS_NUMBER);
     this.setState({ grid: grid2 });
@@ -147,8 +147,9 @@ class Algorithms extends Component {
   };
 
   HandleBackTracing = () => {
-    console.log("szia");
-    backtracing();
+    // console.log("szia");
+    const grid = Backtracing(this.state.grid, ROWS_NUMBER, COLMS_NUMBER);
+    this.setState({ grid });
   };
 
   render() {
@@ -222,12 +223,7 @@ class Algorithms extends Component {
 
 export default Algorithms;
 
-function backtracing() {
-  let stack = new Stack();
-  stack.put(5);
-  console.log(stack.top());
-}
-
+//===================================== valamiért nem fut le csak 1x a while
 function addOuterWalls(grid, width, height) {
   for (let i = 0; i < width; i++) {
     if (i === 0 || i === width - 1) {
