@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./Algorithms.css";
 import Node from "./Node";
 import Astar from "./Algorithms-implement/Astar";
+import BFS from "./Algorithms-implement/BFS";
 import RecursiveDivision from "./maze-generators/RecursiveDivision";
 import Backtracing from "./maze-generators/Backtracing";
 import "bootstrap/dist/css/bootstrap.css";
@@ -41,6 +42,7 @@ class Algorithms extends Component {
     addNeighbours(grid);
     const startNode = grid[NODE_START_X][NODE_START_Y];
     const endNode = grid[NODE_END_X][NODE_END_Y];
+
     let path = Astar(startNode, endNode);
     this.setState({ path: path.path, visitedNodes: path.visitedNodes });
   };
@@ -145,7 +147,19 @@ class Algorithms extends Component {
     );
     this.setState({ grid });
   };
+  HandleBFS = () => {
+    let path = BFS(
+      this.state.grid,
+      this.state.grid[NODE_START_X][NODE_START_Y],
+      this.state.grid[NODE_END_X][NODE_END_Y],
+      ROWS_NUMBER,
+      COLMS_NUMBER
+    );
 
+    this.setState({ path: path.path, visitedNodes: path.visited });
+
+    this.VisualizePath(path.visited, path.path);
+  };
   HandleBackTracing = () => {
     // console.log("szia");
     const grid = Backtracing(this.state.grid, ROWS_NUMBER, COLMS_NUMBER);
@@ -158,6 +172,10 @@ class Algorithms extends Component {
       <div className="container">
         <div className="row">
           <div className="col text-center ">
+            <button className="btn btn-danger btn-md" onClick={this.HandleBFS}>
+              BFS (not working)
+            </button>
+
             <button
               className="btn btn-warning btn-md"
               onClick={this.ResetTable}

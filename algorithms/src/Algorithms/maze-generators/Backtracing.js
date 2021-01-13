@@ -1,5 +1,5 @@
 import Stack from "../Algorithms-implement/Stack";
-
+/* TODO: fix this */
 function makeEverytingWall(grid, ROWS_NUMBER, COLMS_NUMBER) {
   for (let i = 0; i < ROWS_NUMBER; i++) {
     for (let j = 0; j < COLMS_NUMBER; j++) {
@@ -24,14 +24,15 @@ function makeEverytingWall(grid, ROWS_NUMBER, COLMS_NUMBER) {
 function backtracing(grid, ROWS_NUMBER, COLMS_NUMBER) {
   const mygrid = makeEverytingWall(grid, ROWS_NUMBER, COLMS_NUMBER);
   const visited = [];
-
   let stack = new Stack();
-  stack.put(Math.floor(ROWS_NUMBER / 2), 1);
-  visited.push([Math.floor(ROWS_NUMBER / 2), 1]); // {[], [] }...
+  stack.put(grid[Math.floor(ROWS_NUMBER / 2)][1]);
+  visited.push(grid[Math.floor(ROWS_NUMBER / 2)][1]); // {[], [] }...
 
   while (!stack.isEmpty()) {
     let current = stack.pop();
+
     let unVisitidNeighbours = notVisitidNeighbours(
+      grid,
       current,
       visited,
       ROWS_NUMBER,
@@ -44,51 +45,41 @@ function backtracing(grid, ROWS_NUMBER, COLMS_NUMBER) {
         unVisitidNeighbours[
           Math.floor(Math.random() * unVisitidNeighbours.length)
         ];
+      console.log(choosen);
 
-      mygrid[choosen[0]][choosen[1]].isWall = false;
-      stack.put(choosen[0], choosen[1]);
+      mygrid[choosen.x][choosen.y].isWall = false;
+      stack.put(choosen);
       visited.push(choosen);
       console.log(visited);
     }
   }
-
   return mygrid;
 }
 
-function checkVisited(neighbour, visited) {
-  for (let i = 0; i < visited.length; i++) {
-    let isMatch = true;
-    for (let j = 0; j < 2; j++) {
-      if (visited[i][j] !== neighbour[j]) {
-        isMatch = false;
-      }
-    }
-    if (isMatch) return true;
-  }
-
-  return false;
-}
-
-function notVisitidNeighbours(current, visited, ROWS_NUMBER, COLMS_NUMBER) {
+function notVisitidNeighbours(
+  grid,
+  current,
+  visited,
+  ROWS_NUMBER,
+  COLMS_NUMBER
+) {
   let neighbours = [];
   let unvisitid_neighbours = [];
-  if (current[0] - 1 >= 0) neighbours.push([current[0] - 1, current[1]]);
-  if (current[0] + 1 < ROWS_NUMBER)
-    neighbours.push([current[0] + 1, current[1]]);
-  if (current[1] + 1 < COLMS_NUMBER)
-    neighbours.push([current[0], current[1] + 1]);
-  if (current[1] - 1 >= 0) neighbours.push([current[0], current[1] - 1]);
-  //console.log(neighbours);
-
-  // this is how I check if the visitid contains an element
-
+  if (current.x - 1 >= 0) neighbours.push(grid[current.x - 1][current.y]);
+  if (current.x + 1 < ROWS_NUMBER)
+    neighbours.push(grid[current.x + 1][current.y]);
+  if (current.y + 1 < COLMS_NUMBER)
+    neighbours.push(grid[current.x][current.y + 1]);
+  if (current.y - 1 >= 0) neighbours.push(grid[current.x][current.y - 1]);
+  if (neighbours.length === 0) return [];
   for (let i = 0; i < neighbours.length; i++) {
-    let isVisitid = checkVisited(neighbours[i], visited);
-    if (!isVisitid) unvisitid_neighbours.push(neighbours[i]);
+    if (!visited.includes(neighbours[i])) {
+      unvisitid_neighbours.push(neighbours[i]);
+    }
   }
 
   // console.log("god?");
-  //console.log(unvisitid_neighbours.length);
+  console.log(unvisitid_neighbours);
 
   return unvisitid_neighbours;
 }
