@@ -7,8 +7,8 @@ import RecursiveDivision from "./maze-generators/RecursiveDivision";
 import Backtracing from "./maze-generators/Backtracing";
 import "bootstrap/dist/css/bootstrap.css";
 
-const ROWS_NUMBER = 20;
-const COLMS_NUMBER = 20;
+const ROWS_NUMBER = 10;
+const COLMS_NUMBER = 15;
 
 const NODE_START_X = Math.floor(ROWS_NUMBER / 2);
 const NODE_START_Y = 1;
@@ -122,13 +122,13 @@ class Algorithms extends Component {
       if (i === visitedNodes.length) {
         setTimeout(() => {
           visualizeShortestPath(path);
-        }, 10 * i);
+        }, 20 * i);
       } else {
         setTimeout(() => {
           const node = visitedNodes[i];
           document.getElementById(`node-${node.x}-${node.y}`).className =
             "node node-visited";
-        }, 10 * i);
+        }, 20 * i);
       }
     }
   };
@@ -172,12 +172,12 @@ class Algorithms extends Component {
       <div className="container">
         <div className="row">
           <div className="col text-center ">
-            <button className="btn btn-danger btn-md" onClick={this.HandleBFS}>
-              BFS (not working)
+            <button className="btn btn-success btn-md" onClick={this.HandleBFS}>
+              BFS
             </button>
 
             <button
-              className="btn btn-warning btn-md"
+              className="btn btn-success btn-md"
               onClick={this.ResetTable}
             >
               Reset
@@ -190,7 +190,7 @@ class Algorithms extends Component {
             </button>
             <button
               onClick={this.GenerateWalls}
-              className="btn btn-warning btn-md "
+              className="btn btn-success btn-md "
             >
               Generate Walls
             </button>
@@ -287,7 +287,7 @@ function Spot(i, j) {
   this.g = 0;
   this.h = 0;
   this.neighbours = [];
-  this.previus = undefined;
+  this.parent = undefined;
   this.addneighbours = (grid) => {
     if (this.x > 0) this.neighbours.push(grid[this.x - 1][this.y]);
     if (this.x < ROWS_NUMBER - 1)

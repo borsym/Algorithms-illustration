@@ -4,6 +4,11 @@
   outline: 1px solid rgb(175, 216, 248);
   display: inline-block;
 }
+
+.node:hover {
+  background-color: rgb(255, 0, 157);
+}
+
 .node-wall {
   background-color: black;
 }

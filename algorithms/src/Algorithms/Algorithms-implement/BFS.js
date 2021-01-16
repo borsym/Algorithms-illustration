@@ -1,4 +1,3 @@
-import "./Queue";
 import Queue from "./Queue";
 
 //startnode == grid[x][y]
@@ -7,20 +6,18 @@ function BFS(grid, startNode, endNode, row, colm) {
   let visited = [];
   let path = [];
 
-  visited.push(startNode);
   que.enqueue(startNode);
+  visited.push(startNode);
 
   while (!que.isEmpty()) {
     let current = que.dequeue();
     if (current === endNode) {
       let tmp = current;
       path.push(tmp);
-      while (tmp.previous) {
-        path.push(tmp.previous);
-        tmp = tmp.previous;
+      while (tmp.parent) {
+        path.push(tmp.parent);
+        tmp = tmp.parent;
       }
-      //console.log(visited);
-      //return grid;
       return { path, visited };
     }
 
@@ -28,6 +25,7 @@ function BFS(grid, startNode, endNode, row, colm) {
     for (let i = 0; i < neighbours.length; i++) {
       if (!visited.includes(neighbours[i]) && !neighbours[i].isWall) {
         visited.push(neighbours[i]);
+        neighbours[i].parent = current;
         que.enqueue(neighbours[i]);
       }
     }
